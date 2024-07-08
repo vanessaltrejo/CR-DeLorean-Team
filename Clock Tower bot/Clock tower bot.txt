@@ -1,0 +1,608 @@
+/*
+ * --------------------------------------------------------------------------------------------------------------------
+ * Example sketch/program showing how to read data from a PICC to serial.
+ * --------------------------------------------------------------------------------------------------------------------
+ * This is a MFRC522 library example; for further details and other examples see: https://github.com/miguelbalboa/rfid
+ * 
+ * Example sketch/program showing how to read data from a PICC (that is: a RFID Tag or Card) using a MFRC522 based RFID
+ * Reader on the Arduino SPI interface.
+ * 
+ * When the Arduino and the MFRC522 module are connected (see the pin layout below), load this sketch into Arduino IDE
+ * then verify/compile and upload it. To see the output: use Tools, Serial Monitor of the IDE (hit Ctrl+Shft+M). When
+ * you present a PICC (that is: a RFID Tag or Card) at reading distance of the MFRC522 Reader/PCD, the serial output
+ * will show the ID/UID, type and any data blocks it can read. Note: you may see "Timeout in communication" messages
+ * when removing the PICC from reading distance too early.
+ * 
+ * If your reader supports it, this sketch/program will read all the PICCs presented (that is: multiple tag reading).
+ * So if you stack two or more PICCs on top of each other and present them to the reader, it will first output all
+ * details of the first and then the next PICC. Note that this may take some time as all data blocks are dumped, so
+ * keep the PICCs at reading distance until complete.
+ * 
+ * @license Released into the public domain.
+ * 
+ * Typical pin layout used:
+ * -----------------------------------------------------------------------------------------
+ *             MFRC522      Arduino       Arduino   Arduino    Arduino          Arduino
+ *             Reader/PCD   Uno/101       Mega      Nano v3    Leonardo/Micro   Pro Micro
+ * Signal      Pin          Pin           Pin       Pin        Pin              Pin
+ * -----------------------------------------------------------------------------------------
+ * RST/Reset   RST          9             5         D9         RESET/ICSP-5     RST
+ * SPI SS      SDA(SS)      10            53        D10        10               10
+ * SPI MOSI    MOSI         11 / ICSP-4   51        D11        ICSP-4           16
+ * SPI MISO    MISO         12 / ICSP-1   50        D12        ICSP-1           14
+ * SPI SCK     SCK          13 / ICSP-3   52        D13        ICSP-3           15
+ *
+ * More pin layouts for other boards can be found here: https://github.com/miguelbalboa/rfid#pin-layout
+ */
+int led = 1; 
+int ventana1v = 2;
+int ventana2v = 3;
+int ventana3v = 4;
+int ventana4v = 41;
+int ventana5v = 6;
+int ventana6v = 7;
+int ventana1r = 8;
+int ventana2r = 9;
+int ventana3r = 10;
+int ventana4r = 11;  
+int ventana5r = 12;
+int ventana6r = 13;
+int ventana1a = 23;
+int ventana2a = 25;
+int ventana3a = 27;
+int ventana4a = 29;
+int ventana5a = 31;
+int ventana6a = 33;
+int in1 = 35;
+int in2 = 37;
+int ena = 39;
+#include <SPI.h>
+#include <MFRC522.h>
+
+#define RST_PIN         5         // Configurable, see typical pin layout above
+#define SS_PIN          53         // Configurable, see typical pin layout above
+
+MFRC522 mfrc522(SS_PIN, RST_PIN);  // Create MFRC522 instance
+
+void setup() {
+pinMode (ventana1v,OUTPUT);
+pinMode (ventana2v,OUTPUT);
+pinMode (ventana3v,OUTPUT);
+pinMode (ventana4v,OUTPUT);
+pinMode (ventana5v,OUTPUT); 
+pinMode (ventana6v,OUTPUT);
+pinMode (ventana1r,OUTPUT);
+pinMode (ventana2r,OUTPUT);
+pinMode (ventana3r,OUTPUT);
+pinMode (ventana4r,OUTPUT);
+pinMode (ventana5r,OUTPUT); 
+pinMode (ventana6r,OUTPUT);
+pinMode (ventana1a,OUTPUT);
+pinMode (ventana2a,OUTPUT);
+pinMode (ventana3a,OUTPUT);
+pinMode (ventana4a,OUTPUT);
+pinMode (ventana5a,OUTPUT); 
+pinMode (ventana6a,OUTPUT);
+pinMode (led,OUTPUT); 
+pinMode (in1,OUTPUT);
+pinMode (in2,OUTPUT);
+pinMode (ena,OUTPUT);
+	Serial.begin(9600);		// Initialize serial communications with the PC
+	while (!Serial);		// Do nothing if no serial port is opened (added for Arduinos based on ATMEGA32U4)
+	SPI.begin();			// Init SPI bus
+	mfrc522.PCD_Init();		// Init MFRC522
+	delay(4);				// Optional delay. Some board do need more time after init to be ready, see Readme
+	mfrc522.PCD_DumpVersionToSerial();	// Show details of PCD - MFRC522 Card Reader details
+	Serial.println(F("Scan PICC to see UID, SAK, type, and data blocks..."));
+}
+
+void loop() {
+  normal();
+	// Reset the loop if no new card present on the sensor/reader. This saves the entire process when idle.
+	if ( ! mfrc522.PICC_IsNewCardPresent()) {
+		return;
+	}
+
+	// Select one of the cards
+	if ( ! mfrc522.PICC_ReadCardSerial()) {
+		return;
+   
+	}
+
+	// Dump debug info about the card; PICC_HaltA() is automatically called
+	mfrc522.PICC_DumpToSerial(&(mfrc522.uid));
+  alocar();
+}
+void normal(){
+
+  
+  digitalWrite (ventana1v, HIGH);
+  digitalWrite (ventana2v, HIGH);
+  digitalWrite (ventana3v, HIGH);
+  digitalWrite (ventana4v, HIGH);
+  digitalWrite (ventana5v, HIGH); 
+  digitalWrite (ventana6v, HIGH);
+  digitalWrite (ventana1r, HIGH);
+  digitalWrite (ventana2r, HIGH);
+  digitalWrite (ventana3r, HIGH);
+  digitalWrite (ventana4r, HIGH);
+  digitalWrite (ventana5r, HIGH); 
+  digitalWrite (ventana6r, HIGH);
+  digitalWrite (ventana1a, LOW);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, LOW);
+  digitalWrite (ventana4a, LOW);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, LOW);
+  digitalWrite (led, HIGH);
+  digitalWrite (in1,HIGH);
+  digitalWrite (in2,LOW);
+  digitalWrite (ena,HIGH);
+  delay(5000);
+  }
+void alocar(){
+
+  digitalWrite (ventana1v, LOW);
+  digitalWrite (ventana2v, LOW);
+  digitalWrite (ventana3v, LOW);
+  digitalWrite (ventana4v, LOW);
+  digitalWrite (ventana5v, LOW); 
+  digitalWrite (ventana6v, LOW);
+  digitalWrite (ventana1r, LOW);
+  digitalWrite (ventana2r, LOW);
+  digitalWrite (ventana3r, LOW);
+  digitalWrite (ventana4r, LOW);
+  digitalWrite (ventana5r, LOW); 
+  digitalWrite (ventana6r, LOW);
+  digitalWrite (ventana1a, LOW);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, LOW);
+  digitalWrite (ventana4a, LOW);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, LOW);
+  digitalWrite (led, LOW);
+  digitalWrite (in1,LOW);
+  digitalWrite (in2,LOW);
+  digitalWrite (ena,HIGH);
+  delay(1000);
+   
+  digitalWrite (ventana1v, HIGH);
+  digitalWrite (ventana2v, LOW);
+  digitalWrite (ventana3v, HIGH);
+  digitalWrite (ventana4v, HIGH);
+  digitalWrite (ventana5v, LOW); 
+  digitalWrite (ventana6v, HIGH);
+  digitalWrite (ventana1r, HIGH);
+  digitalWrite (ventana2r, LOW);
+  digitalWrite (ventana3r, HIGH);
+  digitalWrite (ventana4r, HIGH);
+  digitalWrite (ventana5r, LOW); 
+  digitalWrite (ventana6r, HIGH);
+  digitalWrite (ventana1a, HIGH);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, HIGH);
+  digitalWrite (ventana4a, HIGH);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, HIGH);
+  digitalWrite (led, HIGH);
+  digitalWrite (in1,LOW);
+  digitalWrite (in2,HIGH);
+  digitalWrite (ena,HIGH);
+  delay(2000);
+  digitalWrite (ventana1v, HIGH);
+  digitalWrite (ventana2v, HIGH);
+  digitalWrite (ventana3v, HIGH);
+  digitalWrite (ventana4v, HIGH);
+  digitalWrite (ventana5v, HIGH); 
+  digitalWrite (ventana6v, HIGH);
+  digitalWrite (ventana1r, HIGH);
+  digitalWrite (ventana2r, HIGH);
+  digitalWrite (ventana3r, HIGH);
+  digitalWrite (ventana4r, HIGH);
+  digitalWrite (ventana5r, HIGH); 
+  digitalWrite (ventana6r, HIGH);
+  digitalWrite (ventana1a, LOW);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, LOW);
+  digitalWrite (ventana4a, LOW);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, LOW);
+  digitalWrite (led, HIGH);
+  digitalWrite (in1,LOW);
+  digitalWrite (in2,HIGH);
+  digitalWrite (ena,HIGH);
+  delay(2000);
+  digitalWrite (ventana1v, LOW);
+  digitalWrite (ventana2v, LOW);
+  digitalWrite (ventana3v, LOW);
+  digitalWrite (ventana4v, LOW);
+  digitalWrite (ventana5v, LOW); 
+  digitalWrite (ventana6v, LOW);
+  digitalWrite (ventana1r, LOW);
+  digitalWrite (ventana2r, LOW);
+  digitalWrite (ventana3r, LOW);
+  digitalWrite (ventana4r, LOW);
+  digitalWrite (ventana5r, LOW); 
+  digitalWrite (ventana6r, LOW);
+  digitalWrite (ventana1a, LOW);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, LOW);
+  digitalWrite (ventana4a, LOW);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, LOW);
+  digitalWrite (led, LOW);
+  digitalWrite (in1,LOW);
+  digitalWrite (in2,LOW);
+  digitalWrite (ena,HIGH);
+  delay(1000);
+   
+  digitalWrite (ventana1v, HIGH);
+  digitalWrite (ventana2v, HIGH);
+  digitalWrite (ventana3v, HIGH);
+  digitalWrite (ventana4v, HIGH);
+  digitalWrite (ventana5v, HIGH); 
+  digitalWrite (ventana6v, HIGH);
+  digitalWrite (ventana1r, HIGH);
+  digitalWrite (ventana2r, HIGH);
+  digitalWrite (ventana3r, HIGH);
+  digitalWrite (ventana4r, HIGH);
+  digitalWrite (ventana5r, HIGH); 
+  digitalWrite (ventana6r, HIGH);
+  digitalWrite (ventana1a, LOW);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, LOW);
+  digitalWrite (ventana4a, LOW);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, LOW);
+  digitalWrite (led, HIGH);
+  digitalWrite (in1,LOW);
+  digitalWrite (in2,HIGH);
+  digitalWrite (ena,HIGH);
+  delay(800);
+  digitalWrite (ventana1v, LOW);
+  digitalWrite (ventana2v, LOW);
+  digitalWrite (ventana3v, LOW);
+  digitalWrite (ventana4v, LOW);
+  digitalWrite (ventana5v, LOW); 
+  digitalWrite (ventana6v, LOW);
+  digitalWrite (ventana1r, LOW);
+  digitalWrite (ventana2r, LOW);
+  digitalWrite (ventana3r, LOW);
+  digitalWrite (ventana4r, LOW);
+  digitalWrite (ventana5r, LOW); 
+  digitalWrite (ventana6r, LOW);
+  digitalWrite (ventana1a, LOW);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, LOW);
+  digitalWrite (ventana4a, LOW);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, LOW);
+  digitalWrite (led, LOW);
+  digitalWrite (in1,LOW);
+  digitalWrite (in2,LOW);
+  digitalWrite (ena,HIGH);
+  delay(800);
+  digitalWrite (ventana1v, HIGH);
+  digitalWrite (ventana2v, HIGH);
+  digitalWrite (ventana3v, HIGH);
+  digitalWrite (ventana4v, HIGH);
+  digitalWrite (ventana5v, HIGH); 
+  digitalWrite (ventana6v, HIGH);
+  digitalWrite (ventana1r, HIGH);
+  digitalWrite (ventana2r, HIGH);
+  digitalWrite (ventana3r, HIGH);
+  digitalWrite (ventana4r, HIGH);
+  digitalWrite (ventana5r, HIGH); 
+  digitalWrite (ventana6r, HIGH);
+  digitalWrite (ventana1a, LOW);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, LOW);
+  digitalWrite (ventana4a, LOW);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, LOW);
+  digitalWrite (led, HIGH);
+  digitalWrite (in1,LOW);
+  digitalWrite (in2,HIGH);
+  digitalWrite (ena,HIGH);
+  delay(650);
+  digitalWrite (ventana1v, LOW);
+  digitalWrite (ventana2v, LOW);
+  digitalWrite (ventana3v, LOW);
+  digitalWrite (ventana4v, LOW);
+  digitalWrite (ventana5v, LOW); 
+  digitalWrite (ventana6v, LOW);
+  digitalWrite (ventana1r, LOW);
+  digitalWrite (ventana2r, LOW);
+  digitalWrite (ventana3r, LOW);
+  digitalWrite (ventana4r, LOW);
+  digitalWrite (ventana5r, LOW); 
+  digitalWrite (ventana6r, LOW);
+  digitalWrite (ventana1a, LOW);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, LOW);
+  digitalWrite (ventana4a, LOW);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, LOW);
+  digitalWrite (led, LOW);
+  digitalWrite (in1,LOW);
+  digitalWrite (in2,LOW);
+  digitalWrite (ena,HIGH);
+  delay(650);
+  digitalWrite (ventana1v, HIGH);
+  digitalWrite (ventana2v, HIGH);
+  digitalWrite (ventana3v, HIGH);
+  digitalWrite (ventana4v, HIGH);
+  digitalWrite (ventana5v, HIGH); 
+  digitalWrite (ventana6v, HIGH);
+  digitalWrite (ventana1r, HIGH);
+  digitalWrite (ventana2r, HIGH);
+  digitalWrite (ventana3r, HIGH);
+  digitalWrite (ventana4r, HIGH);
+  digitalWrite (ventana5r, HIGH); 
+  digitalWrite (ventana6r, HIGH);
+  digitalWrite (ventana1a, LOW);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, LOW);
+  digitalWrite (ventana4a, LOW);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, LOW);
+  digitalWrite (led, HIGH);
+  digitalWrite (in1,LOW);
+  digitalWrite (in2,HIGH);
+  digitalWrite (ena,HIGH);
+  delay(500);
+  digitalWrite (ventana1v, LOW);
+  digitalWrite (ventana2v, LOW);
+  digitalWrite (ventana3v, LOW);
+  digitalWrite (ventana4v, LOW);
+  digitalWrite (ventana5v, LOW); 
+  digitalWrite (ventana6v, LOW);
+  digitalWrite (ventana1r, LOW);
+  digitalWrite (ventana2r, LOW);
+  digitalWrite (ventana3r, LOW);
+  digitalWrite (ventana4r, LOW);
+  digitalWrite (ventana5r, LOW); 
+  digitalWrite (ventana6r, LOW);
+  digitalWrite (ventana1a, LOW);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, LOW);
+  digitalWrite (ventana4a, LOW);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, LOW);
+  digitalWrite (led, LOW);
+  digitalWrite (in1,LOW);
+  digitalWrite (in2,LOW);
+  digitalWrite (ena,HIGH);
+  delay(500);
+  digitalWrite (ventana1v, HIGH);
+  digitalWrite (ventana2v, HIGH);
+  digitalWrite (ventana3v, HIGH);
+  digitalWrite (ventana4v, HIGH);
+  digitalWrite (ventana5v, HIGH); 
+  digitalWrite (ventana6v, HIGH);
+  digitalWrite (ventana1r, HIGH);
+  digitalWrite (ventana2r, HIGH);
+  digitalWrite (ventana3r, HIGH);
+  digitalWrite (ventana4r, HIGH);
+  digitalWrite (ventana5r, HIGH); 
+  digitalWrite (ventana6r, HIGH);
+  digitalWrite (ventana1a, LOW);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, LOW);
+  digitalWrite (ventana4a, LOW);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, LOW );
+  digitalWrite (led, HIGH);
+  digitalWrite (in1,LOW);
+  digitalWrite (in2,HIGH);
+  digitalWrite (ena,HIGH);
+  delay(250);
+  digitalWrite (ventana1v, LOW);
+  digitalWrite (ventana2v, LOW);
+  digitalWrite (ventana3v, LOW);
+  digitalWrite (ventana4v, LOW);
+  digitalWrite (ventana5v, LOW); 
+  digitalWrite (ventana6v, LOW);
+  digitalWrite (ventana1r, LOW);
+  digitalWrite (ventana2r, LOW);
+  digitalWrite (ventana3r, LOW);
+  digitalWrite (ventana4r, LOW);
+  digitalWrite (ventana5r, LOW); 
+  digitalWrite (ventana6r, LOW);
+  digitalWrite (ventana1a, LOW);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, LOW);
+  digitalWrite (ventana4a, LOW);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, LOW);
+  digitalWrite (led, LOW);
+  digitalWrite (in1,LOW);
+  digitalWrite (in2,LOW);
+  digitalWrite (ena,HIGH);
+  delay(250);
+  digitalWrite (ventana1v, HIGH);
+  digitalWrite (ventana2v, HIGH);
+  digitalWrite (ventana3v, HIGH);
+  digitalWrite (ventana4v, HIGH);
+  digitalWrite (ventana5v, HIGH); 
+  digitalWrite (ventana6v, HIGH);
+  digitalWrite (ventana1r, HIGH);
+  digitalWrite (ventana2r, HIGH);
+  digitalWrite (ventana3r, HIGH);
+  digitalWrite (ventana4r, HIGH);
+  digitalWrite (ventana5r, HIGH); 
+  digitalWrite (ventana6r, HIGH);
+  digitalWrite (ventana1a, LOW);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, LOW);
+  digitalWrite (ventana4a, LOW);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, LOW );
+  digitalWrite (led, HIGH);
+  digitalWrite (in1,LOW);
+  digitalWrite (in2,HIGH);
+  digitalWrite (ena,HIGH);
+  delay(250);
+  digitalWrite (ventana1v, LOW);
+  digitalWrite (ventana2v, LOW);
+  digitalWrite (ventana3v, LOW);
+  digitalWrite (ventana4v, LOW);
+  digitalWrite (ventana5v, LOW); 
+  digitalWrite (ventana6v, LOW);
+  digitalWrite (ventana1r, LOW);
+  digitalWrite (ventana2r, LOW);
+  digitalWrite (ventana3r, LOW);
+  digitalWrite (ventana4r, LOW);
+  digitalWrite (ventana5r, LOW); 
+  digitalWrite (ventana6r, LOW);
+  digitalWrite (ventana1a, LOW);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, LOW);
+  digitalWrite (ventana4a, LOW);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, LOW);
+  digitalWrite (led, LOW);
+  digitalWrite (in1,LOW);
+  digitalWrite (in2,LOW);
+  digitalWrite (ena,HIGH);
+  delay(250);
+  digitalWrite (ventana1v, HIGH);
+  digitalWrite (ventana2v, HIGH);
+  digitalWrite (ventana3v, HIGH);
+  digitalWrite (ventana4v, HIGH);
+  digitalWrite (ventana5v, HIGH); 
+  digitalWrite (ventana6v, HIGH);
+  digitalWrite (ventana1r, HIGH);
+  digitalWrite (ventana2r, HIGH);
+  digitalWrite (ventana3r, HIGH);
+  digitalWrite (ventana4r, HIGH);
+  digitalWrite (ventana5r, HIGH); 
+  digitalWrite (ventana6r, HIGH);
+  digitalWrite (ventana1a, LOW);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, LOW);
+  digitalWrite (ventana4a, LOW);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, LOW );
+  digitalWrite (led, HIGH);
+  digitalWrite (in1,LOW);
+  digitalWrite (in2,HIGH);
+  digitalWrite (ena,HIGH);
+  delay(250);
+  digitalWrite (ventana1v, LOW);
+  digitalWrite (ventana2v, LOW);
+  digitalWrite (ventana3v, LOW);
+  digitalWrite (ventana4v, LOW);
+  digitalWrite (ventana5v, LOW); 
+  digitalWrite (ventana6v, LOW);
+  digitalWrite (ventana1r, LOW);
+  digitalWrite (ventana2r, LOW);
+  digitalWrite (ventana3r, LOW);
+  digitalWrite (ventana4r, LOW);
+  digitalWrite (ventana5r, LOW); 
+  digitalWrite (ventana6r, LOW);
+  digitalWrite (ventana1a, LOW);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, LOW);
+  digitalWrite (ventana4a, LOW);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, LOW);
+  digitalWrite (led, LOW);
+  digitalWrite (in1,LOW);
+  digitalWrite (in2,LOW);
+  digitalWrite (ena,HIGH);
+  delay(250);
+  digitalWrite (ventana1v, HIGH);
+  digitalWrite (ventana2v, HIGH);
+  digitalWrite (ventana3v, HIGH);
+  digitalWrite (ventana4v, HIGH);
+  digitalWrite (ventana5v, HIGH); 
+  digitalWrite (ventana6v, HIGH);
+  digitalWrite (ventana1r, HIGH);
+  digitalWrite (ventana2r, HIGH);
+  digitalWrite (ventana3r, HIGH);
+  digitalWrite (ventana4r, HIGH);
+  digitalWrite (ventana5r, HIGH); 
+  digitalWrite (ventana6r, HIGH);
+  digitalWrite (ventana1a, LOW);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, LOW);
+  digitalWrite (ventana4a, LOW);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, LOW );
+  digitalWrite (led, HIGH);
+  digitalWrite (in1,LOW);
+  digitalWrite (in2,HIGH);
+  digitalWrite (ena,HIGH);
+  delay(250);
+   digitalWrite (ventana1v, LOW);
+  digitalWrite (ventana2v, LOW);
+  digitalWrite (ventana3v, LOW);
+  digitalWrite (ventana4v, LOW);
+  digitalWrite (ventana5v, LOW); 
+  digitalWrite (ventana6v, LOW);
+  digitalWrite (ventana1r, LOW);
+  digitalWrite (ventana2r, LOW);
+  digitalWrite (ventana3r, LOW);
+  digitalWrite (ventana4r, LOW);
+  digitalWrite (ventana5r, LOW); 
+  digitalWrite (ventana6r, LOW);
+  digitalWrite (ventana1a, LOW);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, LOW);
+  digitalWrite (ventana4a, LOW);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, LOW);
+  digitalWrite (led, LOW);
+  digitalWrite (in1,LOW);
+  digitalWrite (in2,LOW);
+  digitalWrite (ena,HIGH);
+  delay(250);
+  digitalWrite (ventana1v, HIGH);
+  digitalWrite (ventana2v, HIGH);
+  digitalWrite (ventana3v, HIGH);
+  digitalWrite (ventana4v, HIGH);
+  digitalWrite (ventana5v, HIGH); 
+  digitalWrite (ventana6v, HIGH);
+  digitalWrite (ventana1r, HIGH);
+  digitalWrite (ventana2r, HIGH);
+  digitalWrite (ventana3r, HIGH);
+  digitalWrite (ventana4r, HIGH);
+  digitalWrite (ventana5r, HIGH); 
+  digitalWrite (ventana6r, HIGH);
+  digitalWrite (ventana1a, LOW);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, LOW);
+  digitalWrite (ventana4a, LOW);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, LOW );
+  digitalWrite (led, HIGH);
+  digitalWrite (in1,LOW);
+  digitalWrite (in2,HIGH);
+  digitalWrite (ena,HIGH);
+  delay(100);
+  digitalWrite (ventana1v, LOW);
+  digitalWrite (ventana2v, LOW);
+  digitalWrite (ventana3v, LOW);
+  digitalWrite (ventana4v, LOW);
+  digitalWrite (ventana5v, LOW); 
+  digitalWrite (ventana6v, LOW);
+  digitalWrite (ventana1r, LOW);
+  digitalWrite (ventana2r, LOW);
+  digitalWrite (ventana3r, LOW);
+  digitalWrite (ventana4r, LOW);
+  digitalWrite (ventana5r, LOW); 
+  digitalWrite (ventana6r, LOW);
+  digitalWrite (ventana1a, LOW);
+  digitalWrite (ventana2a, LOW);
+  digitalWrite (ventana3a, LOW);
+  digitalWrite (ventana4a, LOW);
+  digitalWrite (ventana5a, LOW); 
+  digitalWrite (ventana6a, LOW);
+  digitalWrite (led, LOW);
+  digitalWrite (in1,LOW);
+ digitalWrite (in2,LOW);
+ digitalWrite (ena,HIGH);
+ delay(10000000);
+
+}
