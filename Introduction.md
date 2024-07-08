@@ -1,0 +1,1 @@
+Hello! We are CR-Delorean Team. We are Mexico's On-stage representative team for RoboCup 2024. We hope you can find clear all the codes. If you want to see other things like our 3D printed pieces you can go to our linktree. https://linktr.ee/delorean.team 
