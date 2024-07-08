@@ -1,0 +1,50 @@
+// This code was made for the RoboCup 2024 - Onstage.
+// CR- Delorean Team - Mexico. Made by: Mya Lizeth Favela Aguilar
+
+int rayito = 4; // given name to LED strip
+
+
+void setup() {
+ pinMode(rayito, OUTPUT);
+}
+
+// void for on
+void prendido(){
+ digitalWrite(rayito, HIGH);
+}
+
+// void for off
+void apagado(){
+  digitalWrite(rayito, LOW);
+}
+
+// void for lightnings
+void rayitos (){
+  prendido();
+  delay(500);
+  apagado();
+  delay(500);
+
+  prendido();
+  delay(250);
+  apagado();
+  delay(250);
+
+  prendido();
+  delay(250);
+  apagado();
+  delay(250);
+
+  prendido();
+  delay(250);
+  apagado();
+  delay(250);
+}
+void loop() {
+ prendido();
+ delay(100);
+ apagado();
+ delay(100);
+
+ rayitos();
+}
